@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Session Restore Tool</title>
+</head>
+<body>
+    <h1>Google Session Restore</h1>
+    <textarea id="sessionData" placeholder="Paste base64 session data here" style="width:100%;height:200px"></textarea>
+    <button onclick="restoreSession()">Restore Session</button>
+    
+    <script>
+        function restoreSession() {
+            const base64Data = document.getElementById('sessionData').value;
+            try {
+                const sessionData = JSON.parse(atob(base64Data));
+                
+                // Restore cookies
+                sessionData.cookies.split(';').forEach(cookie => {
+                    document.cookie = cookie.trim();
+                });
+                
+                // Restore localStorage
+                Object.entries(JSON.parse(sessionData.localStorage)).forEach(([key, value]) => {
+                    localStorage.setItem(key, value);
+                });
+                
+                // Restore sessionStorage
+                Object.entries(JSON.parse(sessionData.sessionStorage)).forEach(([key, value]) => {
+                    sessionStorage.setItem(key, value);
+                });
+                
+                alert('Session restored! Redirecting to Gmail...');
+                window.location.href = 'https://mail.google.com';
+            } catch (error) {
+                alert('Invalid session data');
+            }
+        }
+    </script>
+</body>
+</html>
